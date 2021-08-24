@@ -1,4 +1,7 @@
+use core::fmt;
 use rand::prelude::*;
+use std::fs::File;
+use std::io::Write;
 
 const TEMPERATURE: f64 = 0.5;
 
@@ -474,6 +477,23 @@ impl Venue {
     }
 }
 
+
+impl fmt::Display for Venue {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        writeln!(f, "{}", self.name)?;
+        writeln!(f, "    Time used: {:>3}/{:>3}", self.time(), self.total_time)?;
+        writeln!(f, "    Cost: {:>3}", self.cost())?;
+        writeln!(f, "    Value: {:>3}", self.value())?;
+        for el in &self.schedule {
+            match el {
+                TimeSlot::BandSlot(time, band) => writeln!(f, "    {} from{:>3} to {:>3}", band.name, time, time + band.time)?,
+                TimeSlot::Break => writeln!(f, "    Break for {} minutes", self.break_time)?,
+            };
+        };
+        Ok(())
+    }
+}
+
 #[derive(Clone, PartialEq)]
 enum Location {
     Tent,
@@ -530,6 +550,13 @@ fn time_is_after(expected_time: u32, time_since_start: u32, loc: Location) -> bo
         Location::Unused => u32::MIN,
     };
     start_time + time_since_start > expected_time
+}
+
+/// Write a vector of scores to a file
+fn write_scores(scores: &[u32], filename: &str) {
+    let data = scores.iter().map(|score| score.to_string()).collect::<Vec<String>>().join(",");
+    let mut f = File::create(filename).expect("Unable to create file");
+    f.write_all(data.as_bytes()).expect("Unable to write data");
 }
 
 /// Initialize the Econochella, Venues, and Bands
@@ -701,6 +728,7 @@ fn main() {
     let mut running_econochella = best_econochella.clone();
 
     let mut rng = rand::thread_rng();
+    let mut scores = Vec::new();
 
     for _ in 0..1_000 {
         let mut temp_econochella = best_econochella.clone();
@@ -718,10 +746,12 @@ fn main() {
                 best_econochella = running_econochella.clone();
             }
         }
-        print!("{}\t", running_econochella.value());
+        scores.push(running_econochella.value());
     }
-    println!("\n The cost is {}, the times are tent: {}, amphitheater: {}, stadium: {}", best_econochella.tent.cost() +best_econochella.amphitheater.cost() + best_econochella.stadium.cost(), best_econochella.tent.time(), best_econochella.amphitheater.time(), best_econochella.stadium.time());
-    println!("Value: {}, \ntent schedule: {:?}, \namphitheater schedule: {:?}, \nstadium schedule: {:?}", best_econochella.value(), best_econochella.tent.schedule, best_econochella.amphitheater.schedule, best_econochella.stadium.schedule);
+    write_scores(&scores, "./running_values.txt");
+    println!("The cost is {}, the times are tent: {}, amphitheater: {}, stadium: {}", best_econochella.tent.cost() +best_econochella.amphitheater.cost() + best_econochella.stadium.cost(), best_econochella.tent.time(), best_econochella.amphitheater.time(), best_econochella.stadium.time());
+    println!("{}\n{}\n{}\n", best_econochella.tent, best_econochella.amphitheater, best_econochella.stadium);
+    // println!("Value: {}, \ntent schedule: {:?}, \namphitheater schedule: {:?}, \nstadium schedule: {:?}", best_econochella.value(), best_econochella.tent.schedule, best_econochella.amphitheater.schedule, best_econochella.stadium.schedule);
 
 }
 
