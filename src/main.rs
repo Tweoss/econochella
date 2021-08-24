@@ -482,17 +482,17 @@ impl fmt::Display for Venue {
         writeln!(f, "{}", self.name)?;
         writeln!(
             f,
-            "    Time used: {:>3}/{:>3}",
+            "    Time used: {}/{}",
             self.time(),
             self.total_time
         )?;
-        writeln!(f, "    Cost: {:>3}", self.cost())?;
-        writeln!(f, "    Value: {:>3}", self.value())?;
+        writeln!(f, "    Cost: {}", self.cost())?;
+        writeln!(f, "    Value: {}", self.value())?;
         for el in &self.schedule {
             match el {
                 TimeSlot::BandSlot(time, band) => writeln!(
                     f,
-                    "    {} from{:>3} to {:>3}",
+                    "    {} from {} to {}",
                     band.name,
                     time,
                     time + band.time
