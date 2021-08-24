@@ -751,7 +751,6 @@ fn main() {
     write_scores(&scores, "./running_values.txt");
     println!("The cost is {}, the times are tent: {}, amphitheater: {}, stadium: {}", best_econochella.tent.cost() +best_econochella.amphitheater.cost() + best_econochella.stadium.cost(), best_econochella.tent.time(), best_econochella.amphitheater.time(), best_econochella.stadium.time());
     println!("{}\n{}\n{}\n", best_econochella.tent, best_econochella.amphitheater, best_econochella.stadium);
-    // println!("Value: {}, \ntent schedule: {:?}, \namphitheater schedule: {:?}, \nstadium schedule: {:?}", best_econochella.value(), best_econochella.tent.schedule, best_econochella.amphitheater.schedule, best_econochella.stadium.schedule);
 
 }
 
