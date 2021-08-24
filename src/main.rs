@@ -480,23 +480,14 @@ impl Venue {
 impl fmt::Display for Venue {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         writeln!(f, "{}", self.name)?;
-        writeln!(
-            f,
-            "    Time used: {}/{}",
-            self.time(),
-            self.total_time
-        )?;
+        writeln!(f, "    Time used: {}/{}", self.time(), self.total_time)?;
         writeln!(f, "    Cost: {}", self.cost())?;
         writeln!(f, "    Value: {}", self.value())?;
         for el in &self.schedule {
             match el {
-                TimeSlot::BandSlot(time, band) => writeln!(
-                    f,
-                    "    {} from {} to {}",
-                    band.name,
-                    time,
-                    time + band.time
-                )?,
+                TimeSlot::BandSlot(_, band) => {
+                    writeln!(f, "    {} for {} minutes", band.name, band.time)?
+                }
                 TimeSlot::Break => writeln!(f, "    Break for {} minutes", self.break_time)?,
             };
         }
@@ -764,10 +755,11 @@ fn main() {
     }
     write_scores(&scores, "./running_values.txt");
     println!(
-        "The cost is {}, the times are tent: {}, amphitheater: {}, stadium: {}",
+        "The cost is {}, the value is {}, and the times are tent: {}, amphitheater: {}, stadium: {}",
         best_econochella.tent.cost()
-            + best_econochella.amphitheater.cost()
-            + best_econochella.stadium.cost(),
+        + best_econochella.amphitheater.cost()
+        + best_econochella.stadium.cost(),
+        best_econochella.value(),
         best_econochella.tent.time(),
         best_econochella.amphitheater.time(),
         best_econochella.stadium.time()
