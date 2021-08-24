@@ -477,19 +477,29 @@ impl Venue {
     }
 }
 
-
 impl fmt::Display for Venue {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         writeln!(f, "{}", self.name)?;
-        writeln!(f, "    Time used: {:>3}/{:>3}", self.time(), self.total_time)?;
+        writeln!(
+            f,
+            "    Time used: {:>3}/{:>3}",
+            self.time(),
+            self.total_time
+        )?;
         writeln!(f, "    Cost: {:>3}", self.cost())?;
         writeln!(f, "    Value: {:>3}", self.value())?;
         for el in &self.schedule {
             match el {
-                TimeSlot::BandSlot(time, band) => writeln!(f, "    {} from{:>3} to {:>3}", band.name, time, time + band.time)?,
+                TimeSlot::BandSlot(time, band) => writeln!(
+                    f,
+                    "    {} from{:>3} to {:>3}",
+                    band.name,
+                    time,
+                    time + band.time
+                )?,
                 TimeSlot::Break => writeln!(f, "    Break for {} minutes", self.break_time)?,
             };
-        };
+        }
         Ok(())
     }
 }
@@ -554,7 +564,11 @@ fn time_is_after(expected_time: u32, time_since_start: u32, loc: Location) -> bo
 
 /// Write a vector of scores to a file
 fn write_scores(scores: &[u32], filename: &str) {
-    let data = scores.iter().map(|score| score.to_string()).collect::<Vec<String>>().join(",");
+    let data = scores
+        .iter()
+        .map(|score| score.to_string())
+        .collect::<Vec<String>>()
+        .join(",");
     let mut f = File::create(filename).expect("Unable to create file");
     f.write_all(data.as_bytes()).expect("Unable to write data");
 }
@@ -749,8 +763,17 @@ fn main() {
         scores.push(running_econochella.value());
     }
     write_scores(&scores, "./running_values.txt");
-    println!("The cost is {}, the times are tent: {}, amphitheater: {}, stadium: {}", best_econochella.tent.cost() +best_econochella.amphitheater.cost() + best_econochella.stadium.cost(), best_econochella.tent.time(), best_econochella.amphitheater.time(), best_econochella.stadium.time());
-    println!("{}\n{}\n{}\n", best_econochella.tent, best_econochella.amphitheater, best_econochella.stadium);
-
+    println!(
+        "The cost is {}, the times are tent: {}, amphitheater: {}, stadium: {}",
+        best_econochella.tent.cost()
+            + best_econochella.amphitheater.cost()
+            + best_econochella.stadium.cost(),
+        best_econochella.tent.time(),
+        best_econochella.amphitheater.time(),
+        best_econochella.stadium.time()
+    );
+    println!(
+        "{}\n{}\n{}\n",
+        best_econochella.tent, best_econochella.amphitheater, best_econochella.stadium
+    );
 }
-
